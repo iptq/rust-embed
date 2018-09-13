@@ -12,7 +12,8 @@ use quote::Tokens;
 use std::path::Path;
 
 #[cfg(debug_assertions)]
-fn generate_assets(ident: &syn::Ident, folder_path: String) -> quote::Tokens {
+fn generate_assets(ident: &syn::Ident, folder_path: impl AsRef<Path>) -> quote::Tokens {
+  let folder_path = folder_path.as_ref().to_str().unwrap();
   quote!{
       impl #ident {
           pub fn get(file_path: &str) -> Option<Vec<u8>> {
@@ -42,7 +43,7 @@ fn generate_assets(ident: &syn::Ident, folder_path: String) -> quote::Tokens {
 }
 
 #[cfg(not(debug_assertions))]
-fn generate_assets(ident: &syn::Ident, folder_path: String) -> quote::Tokens {
+fn generate_assets(ident: &syn::Ident, folder_path: impl AsRef<Path>) -> quote::Tokens {
   use walkdir::WalkDir;
   let mut values = Vec::<Tokens>::new();
   for entry in WalkDir::new(folder_path.clone())
